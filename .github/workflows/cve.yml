@@ -1,0 +1,36 @@
+name: Auto Update
+
+on:
+  schedule:
+    - cron: "0 0 * * *" # Run every day at midnight
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    
+    - name: Get latest tag
+      run: |
+        latest_tag=$(curl -s https://api.github.com/repos/cveproject/cvelist/tags | jq -r '.[0].name')
+        echo "::set-output name=tag::$latest_tag"
+    
+    - name: Pull changes
+      run: git pull
+    
+    - name: Update files
+      run: |
+        # Modify the files with the updated information
+        # For example, you can use sed or any other tool
+        
+    - name: Commit changes
+      run: |
+        git config user.name "Your Name"
+        git config user.email "youremail@example.com"
+        git add .
+        git commit -m "Auto update - ${{ steps.get_latest_tag.outputs.tag }}"
+    
+    - name: Push changes
+      run: git push
